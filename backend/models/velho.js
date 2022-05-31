@@ -5,7 +5,18 @@ const velhoSchema = new mongoose.Schema(
     nome:{type: String, required: true},
     medium:{ type: String, required: true }, 
     numFila: { type: Number, required: true},
-    consulta:{type: Boolean, default: true, required:true }
+    numFila: { type: Number, required: true,default: 0},
+    vagas: { type: Number, required: true, default: 10},
+    consulta:{type: Boolean, default: true, required:true },
+    agendamentos:[{
+      nome:{type:String},
+      email:{type:String},
+      nomeVelho:{type:String},
+      numFila:{type:Number},
+      preferencial:{type: Boolean},
+      diaData:{type:String},
+  },
+  ],
   },
   {
     timestamps: true,

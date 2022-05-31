@@ -24,7 +24,7 @@ export default function Login(props) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('nome',response.data.name);
                    
-        history.push('/home')
+        history.push('/admin')
         
     } catch (err) { 
         alert(`Não foi possível realizar o Login ${err.message}`);
