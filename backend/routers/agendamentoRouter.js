@@ -23,6 +23,16 @@ agendamentoRouter.get(
     })
   );
 
+  agendamentoRouter.delete(
+    '/zerar',
+    expressAsyncHandler(async (req, res) => {
+      await Agendamento.remove({});
+      await Velho.updateMany({"consulta":"true"},{"numFila":0,"agendamentos":[],"vagas":10});
+      
+      res.send();
+    })
+  );
+
 agendamentoRouter.get(
     '/list',
     
@@ -55,28 +65,56 @@ agendamentoRouter.get(
 
     })
   );
-agendamentoRouter.delete(
-    '/zerar',
+agendamentoRouter.get(
+    '/total',
     
     expressAsyncHandler(async (req, res) => {
-      
-      await Agendamento.remove({});
+
+      const totalAgendamentos = await Agendamento.countDocuments();   
+      res.send([totalAgendamentos]);
 
     })
+);
+
+agendamentoRouter.get(
+  '/preferencial',
+  
+  expressAsyncHandler(async (req, res) => {
+
+    const preferencial = await Agendamento.countDocuments({"preferencial":"true"});   
+    res.send([preferencial]);
+
+  })
+);
+
+agendamentoRouter.get(
+  '/dia',
+  
+  expressAsyncHandler(async (req, res) => {
+
+    const agendamentoDia = await Agendamento.find({"diaData":`${req.body.diaData}`}); 
+    res.send(agendamentoDia);
+
+  })
 );
 
 agendamentoRouter.post(
     '/novo',
     expressAsyncHandler(async (req, res) => {
-      const [velho] = await Velho.find({"nome":`${req.body.velho}`}).select('numFila medium');
-      const agendamento = new Agendamento({
-        name: req.body.name,
-        email: req.body.email,
-        velho:req.body.velho,
-        numFila:velho.numFila+1,
-        diaData:req.body.diaData,
-    });
-    const fila = await Velho.findById(velho._id);
+      const [velho] = await Velho.find({"nome":`${req.body.velho}`}).select('numFila medium agendamentos vagas');
+      const velhoAgenda = velho.agendamentos;
+      const velhoVagas = velho.vagas;
+      if(velhoVagas>0){
+        const agendamento = new Agendamento({
+          name: req.body.name,
+          email: req.body.email,
+          velho:req.body.velho,
+          numFila:velho.numFila+1,
+          diaData:req.body.diaData,
+          preferencial:req.body.preferencial,
+      });
+
+      const fila = await Velho.findById(velho._id);
       fila.numFila = velho.numFila + 1;
 
     const filaUpdate = await fila.save();
@@ -86,11 +124,19 @@ agendamentoRouter.post(
     const [novoAgendamento] = [{
       nome:req.body.name,
       email:req.body.email,
-      nomeVelho:req.body.velho
+      nomeVelho:req.body.velho,
+      numFila:velho.numFila+1,
+      preferencial:req.body.preferencial,
+      diaData:req.body.diaData,
     }];
 
-    agenda.agendamentos = agendamentos.concat(novoAgendamento);
+    
 
+    agenda.agendamentos = agendamentos.concat(novoAgendamento);
+    velho.agendamentos = velhoAgenda.concat(novoAgendamento);
+    velho.vagas = (velhoVagas - 1) ;
+
+    const velhoUpdate = await velho.save();
     
     const agendaUpdate = await agenda.save();
 
@@ -102,12 +148,19 @@ agendamentoRouter.post(
         email: createdAgendamento.email,
         velho:createdAgendamento.velho,
         medium:velho.medium,
+        preferencial:createdAgendamento.preferencial,
         numFila:createdAgendamento.numFila,
         diaData:createdAgendamento.diaData,
-        fila:filaUpdate.numFila,
         agendaUpdate:agendaUpdate.diaData,
+        velho:velhoUpdate.agendamento,
+        vagas:velhoUpdate.vagas,
     
       });
+
+      }else{
+        res.status(404).send({ message: 'Limite de Vagas Atingido' });
+      }
+      
     })
   );
 
@@ -132,6 +185,7 @@ agendamentoRouter.get(
       }
     })
   );
+
 agendamentoRouter.delete(
   '/:id',
     isAuth,

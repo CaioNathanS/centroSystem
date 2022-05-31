@@ -68,6 +68,7 @@ velhoRouter.post(
         nome: createdVelho.nome,
         medium: createdVelho.medium,
         numFila:createdVelho.numFila,
+        vagas:createdVelho.vagas,
       });
     })
   );

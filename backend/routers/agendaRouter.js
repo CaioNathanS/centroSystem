@@ -33,6 +33,17 @@ agendaRouter.get(
 
     })
   );
+agendaRouter.get(
+    '/listAgendamento',
+    
+    expressAsyncHandler(async (req, res) => {
+      
+      const agenda = await Agenda.find().sort({'_id':-1});
+      
+      res.send( agenda )
+
+    })
+  );
 
 
 agendaRouter.put(

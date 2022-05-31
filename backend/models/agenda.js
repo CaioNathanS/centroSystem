@@ -4,7 +4,7 @@ const agendaSchema = new mongoose.Schema(
   {
     diaData:{type: String},
     velhos:[{
-        name:{type:String},
+        nome:{type:String},
         medium:{type:String},
     },
     ],
