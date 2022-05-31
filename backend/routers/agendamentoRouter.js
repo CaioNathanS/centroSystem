@@ -46,6 +46,23 @@ agendamentoRouter.get(
   );
 
   agendamentoRouter.get(
+    '/listvelho/:velho',
+    
+    expressAsyncHandler(async (req, res) => {
+      const velho = req.params.velho;
+      var fila = []
+      const numeros = [1, 2, 6, 8, 5, 1 ,4, 6, 2, 8, 5, 6];
+      const agendamento = await Agendamento.find({"velho":velho}).select('numFila');
+      agendamento.forEach(filas => {
+        fila = fila.concat(filas.numFila) 
+        console.log(filas.numFila)
+      });
+      res.send(agendamento)
+      
+
+    })
+  );
+  agendamentoRouter.get(
     '/try',
     
     expressAsyncHandler(async (req, res) => {

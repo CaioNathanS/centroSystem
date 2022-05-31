@@ -16,6 +16,9 @@ export default function Entrada(props) {
   const [email,setEmail] = useState(''); 
   const [velho,setVelho] = useState('');
   const [diaData,setDiadata] = useState('')
+  const [ordem,setOrdem] = useState([]);
+  const [fila,setFila] = useState('');
+  
   
     
   useEffect(()=>{
@@ -27,9 +30,17 @@ export default function Entrada(props) {
 
     }})
     return()=> mounted = false;
-    
 
 },[]);
+
+async function getFila(fila) {
+  
+          await  Axios.get(`/api/agendamento/listvelho/${fila}`).then(response =>{
+              setOrdem(response.data);
+  
+          })
+  
+}
   async function handleSubmit(e) {
     e.preventDefault();
 
@@ -96,16 +107,16 @@ export default function Entrada(props) {
 						<label>
 							<select 
                             value={velho}
-                            onChange={(e) => setVelho(e.target.value)}>
+                            onChange={(e) => setVelho(e.target.value) & getFila(e.target.value)}>
                                  <option value='' selected> </option>
 								
                                 {agenda !== '' && 
                                  <>
-								{agenda.map((agenda) => (
+							                	{agenda.map((agenda) => (
                                     <>
                                     {agenda.velhos.map((velhos) =>(
                                         <>
-                                        <option> {velhos.nome}</option>
+                                        <option value={velhos.nome}> {velhos.nome}</option>
 
                                         </>
 
@@ -123,7 +134,7 @@ export default function Entrada(props) {
 
                     <section> 
                         <label>Preferencial </label>
-						<label>
+                        <label>
 							<select 
                             value={preferencial}
                             onChange={(e) => setPreferencial(e.target.value)}>
@@ -134,6 +145,33 @@ export default function Entrada(props) {
 							</select>
 							<i></i>
 						</label>
+					
+					</section>
+
+          <section> 
+                        <label> Ordem Fila </label>
+                        <label>
+							<select 
+                            value={fila}
+                            onChange={(e) => setFila(e.target.value)}>
+                              <option value='' selected>  </option>
+                              
+								
+                                 {ordem !== '' && 
+                                 <>
+							                	{ordem.map((ordem) => (
+                                    <>
+                                     <option> {ordem.numFila} </option>
+                                    </>     
+                                  ))} 
+                                  </>
+                                }
+							
+                                
+							</select>
+							<i></i>
+						</label>
+						
 					</section>
 
 
