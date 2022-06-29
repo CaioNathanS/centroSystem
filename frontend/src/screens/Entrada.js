@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 
 
 import Axios from 'axios';
+import Header from '../components/Header';
+import Form from '../components/Form';
 
 
 
@@ -37,11 +39,12 @@ async function getFila(fila) {
   
           await  Axios.get(`/api/agendamento/listvelho/${fila}`).then(response =>{
               setOrdem(response.data);
-  
           })
   
 }
-  async function handleSubmit(e) {
+
+
+async function handleSubmit(e) {
     e.preventDefault();
 
     try{
@@ -62,124 +65,9 @@ async function getFila(fila) {
 
   return (
     <div>
+ <Header/>
 
-      <div>
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label>Nome</label>
-              <input type='text'
-              required
-              onChange={(e)=>setName(e.target.value)}
-              ></input>
-          </div>
-
-          <div>
-            <label>Email</label>
-                <input type='email'
-                required
-                onChange={(e)=>setEmail(e.target.value)}
-                ></input>
-          </div>
-
-                     <section> 
-                        <label> Dia </label>
-						<label>
-							<select 
-                            value={diaData}
-                            onChange={(e) => setDiadata(e.target.value)}>
-                                 <option value='' selected> </option>
-								
-                                {agenda !== '' && 
-                                 <>
-								{agenda.map((agenda) => (
-                                       <option> {agenda.diaData}</option> 
-                                  ))} 
-                                  </>
-                                }
-                                
-							</select>
-							<i></i>
-						</label>
-					</section>
-            
-                    <section> 
-                        <label> Velho </label>
-						<label>
-							<select 
-                            value={velho}
-                            onChange={(e) => setVelho(e.target.value) & getFila(e.target.value)}>
-                                 <option value='' selected> </option>
-								
-                                {agenda !== '' && 
-                                 <>
-							                	{agenda.map((agenda) => (
-                                    <>
-                                    {agenda.velhos.map((velhos) =>(
-                                        <>
-                                        <option value={velhos.nome}> {velhos.nome}</option>
-
-                                        </>
-
-                                    ) )}
-                                    </>
-                                       
-                                  ))} 
-                                  </>
-                                }
-                                
-							</select>
-							<i></i>
-						</label>
-					</section>
-
-                    <section> 
-                        <label>Preferencial </label>
-                        <label>
-							<select 
-                            value={preferencial}
-                            onChange={(e) => setPreferencial(e.target.value)}>
-                                 <option value='false' selected> Não </option>
-                                 <option value='true' selected> Sim </option>
-							
-                                
-							</select>
-							<i></i>
-						</label>
-					
-					</section>
-
-          <section> 
-                        <label> Ordem Fila </label>
-                        <label>
-							<select 
-                            value={fila}
-                            onChange={(e) => setFila(e.target.value)}>
-                              <option value='' selected>  </option>
-                              
-								
-                                 {ordem !== '' && 
-                                 <>
-							                	{ordem.map((ordem) => (
-                                    <>
-                                     <option> {ordem.numFila} </option>
-                                    </>     
-                                  ))} 
-                                  </>
-                                }
-							
-                                
-							</select>
-							<i></i>
-						</label>
-						
-					</section>
-
-
-            <button type='submit'> Ok</button>
-
-        </form>
-      </div>
-
+ <Form/>
            
       
     </div>

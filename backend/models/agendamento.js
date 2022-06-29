@@ -6,7 +6,7 @@ const agendamentoSchema = new mongoose.Schema(
     velho:{ type: String, required: true }, 
     name: { type: String, required: true },
     email: { type: String, required: true },
-    numFila: { type: Number, required: true},
+    numFila: { type: Number , required: true},
     preferencial: { type: Boolean, default: false}
     
   },

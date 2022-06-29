@@ -27,7 +27,7 @@ agendamentoRouter.get(
     '/zerar',
     expressAsyncHandler(async (req, res) => {
       await Agendamento.remove({});
-      await Velho.updateMany({"consulta":"true"},{"numFila":0,"agendamentos":[],"vagas":10});
+      await Velho.updateMany({"consulta":"true"},{"numFila":0,"agendamentos":[],"vagasPreferenciais":5,"vagas":10});
       
       res.send();
     })
@@ -51,13 +51,35 @@ agendamentoRouter.get(
     expressAsyncHandler(async (req, res) => {
       const velho = req.params.velho;
       var fila = []
-      const numeros = [1, 2, 6, 8, 5, 1 ,4, 6, 2, 8, 5, 6];
+      var numeros = [
+        {status:'disponivel',numero:1},
+        {status:'disponivel',numero:2},
+        {status:'disponivel',numero:3},
+        {status:'disponivel',numero:4},
+        {status:'disponivel',numero:5},
+        {status:'disponivel',numero:6},
+        {status:'disponivel',numero:7},
+        {status:'disponivel',numero:8},
+        {status:'disponivel',numero:9},
+        {status:'disponivel',numero:10},      
+      ];
       const agendamento = await Agendamento.find({"velho":velho}).select('numFila');
-      agendamento.forEach(filas => {
-        fila = fila.concat(filas.numFila) 
-        console.log(filas.numFila)
-      });
-      res.send(agendamento)
+      var i;
+      for(i=0;i<=9;i++){
+        if(agendamento[i]){
+          var n;
+          for(n=0;n<=9;n++){
+            if(agendamento[i].numFila === n & agendamento[i].numFila !== 0){
+              numeros.splice(n-1,1,{status:'indisponivel',numero:n})
+            }
+          }  
+        }
+      }
+     
+
+  
+    
+      res.send(numeros)
       
 
     })
@@ -121,20 +143,17 @@ agendamentoRouter.post(
       const [velho] = await Velho.find({"nome":`${req.body.velho}`}).select('numFila medium agendamentos vagas');
       const velhoAgenda = velho.agendamentos;
       const velhoVagas = velho.vagas;
-      if(velhoVagas>0){
+      if(velhoVagas>0 & req.body.numFila !== null){
         const agendamento = new Agendamento({
           name: req.body.name,
           email: req.body.email,
           velho:req.body.velho,
-          numFila:velho.numFila+1,
+          numFila:req.body.numFila,
           diaData:req.body.diaData,
           preferencial:req.body.preferencial,
       });
 
-      const fila = await Velho.findById(velho._id);
-      fila.numFila = velho.numFila + 1;
-
-    const filaUpdate = await fila.save();
+    
    
     const [agenda] = await Agenda.find({"diaData":`${req.body.diaData}`}).select('agendamentos');
     const agendamentos = agenda.agendamentos;
@@ -142,7 +161,7 @@ agendamentoRouter.post(
       nome:req.body.name,
       email:req.body.email,
       nomeVelho:req.body.velho,
-      numFila:velho.numFila+1,
+      numFila:req.body.numFila,
       preferencial:req.body.preferencial,
       diaData:req.body.diaData,
     }];
@@ -176,6 +195,69 @@ agendamentoRouter.post(
 
       }else{
         res.status(404).send({ message: 'Limite de Vagas Atingido' });
+      }
+      
+    })
+  );
+
+  agendamentoRouter.post(
+    '/novopref',
+    expressAsyncHandler(async (req, res) => {
+      const [velho] = await Velho.find({"nome":`${req.body.velho}`}).select('vagasPreferenciais medium agendamentos');
+      const velhoAgenda = velho.agendamentos;
+      const velhoVagas = velho.vagasPreferenciais;
+      if(velhoVagas>0){
+        const agendamento = new Agendamento({
+          name: req.body.name,
+          email: req.body.email,
+          velho:req.body.velho,
+          numFila:req.body.numFila,
+          diaData:req.body.diaData,
+          preferencial:true,
+      });
+
+    
+   
+    const [agenda] = await Agenda.find({"diaData":`${req.body.diaData}`}).select('agendamentos');
+    const agendamentos = agenda.agendamentos;
+    const [novoAgendamento] = [{
+      nome:req.body.name,
+      email:req.body.email,
+      nomeVelho:req.body.velho,
+      numFila:0,
+      preferencial:true,
+      diaData:req.body.diaData,
+    }];
+
+    
+
+    agenda.agendamentos = agendamentos.concat(novoAgendamento);
+    velho.agendamentos = velhoAgenda.concat(novoAgendamento);
+    velho.vagasPreferenciais = (velhoVagas - 1) ;
+
+    const velhoUpdate = await velho.save();
+    
+    const agendaUpdate = await agenda.save();
+
+
+      const createdAgendamento = await agendamento.save();
+      res.send({
+        _id: createdAgendamento._id,
+        name: createdAgendamento.name,
+        email: createdAgendamento.email,
+        velho:createdAgendamento.velho,
+        medium:velho.medium,
+        preferencial:createdAgendamento.preferencial,
+        numFila:createdAgendamento.numFila,
+        diaData:createdAgendamento.diaData,
+        agendaUpdate:agendaUpdate.diaData,
+        velho:velhoUpdate.agendamento,
+        vagas:velhoUpdate.vagasPreferenciais,
+    
+      });
+
+      }else{
+        res.status(404).send({ message: 'Limite de Vagas Preferenciais Atingido' });
       }
       
     })
