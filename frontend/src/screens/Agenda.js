@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import{ Link, useHistory} from 'react-router-dom';
 
 import Axios from 'axios';
+import TabelaAgenda from '../components/TabelaAgenda';
 
 
 export default function Agenda() {
@@ -37,7 +38,11 @@ useEffect(()=>{
 return (
     <div>
 
+<TabelaAgenda/>
+
 <div style={{"text-align":"center"}} > 
+
+
         {agenda !== '' && 
         <>
          <h1> Agenda </h1> 

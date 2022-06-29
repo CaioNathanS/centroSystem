@@ -10,6 +10,7 @@ import data from '../data.js';
 import { isAdmin, isAuth} from '../utils.js';
 import Agenda from '../models/agenda.js';
 import Velho from '../models/velho.js';
+import Agendamento from '../models/agendamento.js';
 
 const agendaRouter = express.Router();
 
@@ -27,7 +28,7 @@ agendaRouter.get(
     
     expressAsyncHandler(async (req, res) => {
       
-      const agenda = await Agenda.find();
+      const agenda = await Agenda.find().sort({'_id':-1});
       
       res.send( agenda )
 
@@ -38,7 +39,27 @@ agendaRouter.get(
     
     expressAsyncHandler(async (req, res) => {
       
-      const agenda = await Agenda.find().sort({'_id':-1});
+      const agenda = await Agenda.find({"aberto":"true"}).sort({'_id':-1});
+      
+      
+      res.send( agenda )
+
+    })
+  );
+
+agendaRouter.put(
+    '/close/:id',
+    
+    expressAsyncHandler(async (req, res) => {
+
+      await Velho.updateMany({"consulta":"true"},{"numFila":0,"agendamentos":[],"vagas":10})
+      await Agendamento.remove({});
+      const agenda = await Agenda.findById(req.params.id);
+
+      agenda.aberto=false;
+
+      await agenda.save();
+      
       
       res.send( agenda )
 

@@ -4,7 +4,7 @@ import{ Link, useHistory} from 'react-router-dom';
 import Axios from 'axios';
 
 
-export default function Agendamento() {
+export default function Agendamento(props) {
 
 
 const history=useHistory();
@@ -19,7 +19,7 @@ const [agendamento,setAgendamento] = useState('');
 
 useEffect(()=>{
     let mounted=true;
-    Axios.get('/api/velho/list',{
+    Axios.get(`/api/velho/list/${props.match.params.id}`,{
         headers:{
             Authorization:`Bearer ${token}`,
         }
@@ -40,36 +40,82 @@ return (
 <div style={{"text-align":"center"}} > 
         {agendamento !== '' && 
         <>
-         <h1> Agendamentos </h1> 
          <div>
          
         {agendamento.map((agendamento) => (
             <>
-           <h3>   <button>{agendamento.nome} </button> </h3>
-            <table className="w3-table w3-striped w3-white">
-            <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Email</th>
-                        <th>Fila</th>  
-                        <th>Preferencial</th>
-                        <th>Data</th>                       
-                    </tr>
-                    </thead>
-            
-                
-                {agendamento.agendamentos.map((agendamentos) => (
-                        <tr>
-                        <td> {agendamentos.nome}</td>
-                        <td> {agendamentos.email}</td>
-                        <td> {agendamentos.numFila}</td>
-                        <td> {agendamentos.preferencial=== true ? "Sim" : "Não" }</td>
-                        <td> {agendamentos.diaData}</td>
-                        
-                        </tr>
+           <h3>   {agendamento.nome}  </h3>
+
+
+           <div class="br-table" title="Tabela Velhos">
+        <div class="table-header">
+          <div class="top-bar">
+            <div class="table-title">Fila</div>
+          </div>
+        </div>
+        <table>
+        <thead>
+            <tr>
+              <th class="border-bottom" scope="col">Nome</th>
+              <th class="border-bottom " scope="col">Email</th>
+              <th class="border-bottom " colspan="1" scope="col">Ordem</th>
+            </tr>
+          </thead>
+          <tbody>
+             
+          {agendamento.agendamentos.map((agendamentos) => (
+            <>
+            {agendamentos.preferencial !== true && 
+                 <tr>
+                 <td> {agendamentos.nome}</td>
+                 <td> {agendamentos.email}</td>
+                 <td> {agendamentos.numFila}</td>
+                 </tr>
+            }
+                       
+                        </>
                     ))}
            
-            </table>
+          </tbody>
+         
+        </table>
+      </div>
+
+           <div class="br-table" title="Tabela Velhos">
+        <div class="table-header">
+          <div class="top-bar">
+            <div class="table-title">Preferencial</div>
+          </div>
+        </div>
+        <table>
+        <thead>
+            <tr>
+              <th class="border-bottom" scope="col">Nome</th>
+              <th class="border-bottom " scope="col">Email</th>
+              <th class="border-bottom " colspan="1" scope="col">Ordem</th>
+            </tr>
+          </thead>
+          <tbody>
+               
+          {agendamento.agendamentos.map((agendamentos) => (
+            <>
+            {agendamentos.preferencial === true && 
+                 <tr>
+                 <td> {agendamentos.nome}</td>
+                 <td> {agendamentos.email}</td>
+                 <td> </td>
+                 </tr>
+            }
+                       
+                        </>
+                    ))}
+           
+          </tbody>
+         
+        </table>
+      </div>
+           
+           
             </>
         ))} 
         

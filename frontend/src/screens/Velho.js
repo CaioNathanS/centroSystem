@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import{ Link, useHistory} from 'react-router-dom';
 
 import Axios from 'axios';
+import TabelaVelhos from '../components/TabelaVelhos';
 
 
-export default function Velho() {
+export default function Velho(props) {
 
 
 const history=useHistory();
@@ -19,7 +20,7 @@ const [velhos,setVelhos] = useState('');
 
 useEffect(()=>{
     let mounted=true;
-    Axios.get('/api/velho/list',{
+    Axios.get(`/api/velho/list/${props.match.params.id}`,{
         headers:{
             Authorization:`Bearer ${token}`,
         }
@@ -31,11 +32,15 @@ useEffect(()=>{
     return()=> mounted = false;
     
 
-},[token]);
+},[token,props.match.params.id]);
 
 
 return (
     <div>
+
+<h2 className='p-3'> Velho </h2>
+
+   
 
 <div style={{"text-align":"center"}} > 
         {velhos !== '' && 
@@ -46,7 +51,7 @@ return (
             
             <ul className='velho'> 
                 <li> {velhos.nome}  </li>
-                <li> {velhos.medium}</li>
+                <li> {velhos.vagas}</li>
                 <li> {velhos.consulta === true ? "Aberto" : "Fechado" }</li>
                 
             </ul>
@@ -55,6 +60,84 @@ return (
         </>  
         
         }
+
+<div class="br-table" title="Tabela Velhos">
+        <div class="table-header">
+          <div class="top-bar">
+            <div class="table-title">Fila</div>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th class="border-bottom" scope="col">Nome</th>
+              <th class="border-bottom " scope="col">Email</th>
+              <th class="border-bottom " colspan="1" scope="col">Ordem</th>
+              
+            </tr>
+          </thead>
+          <tbody>
+
+          {velhos !== '' && 
+        <>
+        
+        {velhos.map((velhos) => (
+            
+             
+
+
+            <tr> 
+                <td> {velhos.nome}  </td>
+                <td> {velhos.email}</td>
+                <td> {velhos.numFila }</td>
+                
+            </tr>
+        ))} 
+        
+        </>  
+        
+        }
+            <tr>
+
+
+              <td>Full color</td>
+              <td>A2</td>
+              <td>A3</td>
+              
+            </tr>
+           
+          </tbody>
+         
+        </table>
+      </div>
+
+      <div class="br-table" title="Tabela Velhos">
+        <div class="table-header">
+          <div class="top-bar">
+            <div class="table-title">Preferencial</div>
+          </div>
+        </div>
+        <table>
+        <thead>
+            <tr>
+              <th class="border-bottom" scope="col">Nome</th>
+              <th class="border-bottom " scope="col">Email</th>
+              <th class="border-bottom " colspan="1" scope="col">Ordem</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+
+              <td>Full color</td>
+              <td>A2</td>
+              <td>A3</td>
+              
+            </tr>
+           
+          </tbody>
+         
+        </table>
+      </div>
         
     </div>
            

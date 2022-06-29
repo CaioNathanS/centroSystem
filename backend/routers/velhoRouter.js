@@ -33,6 +33,37 @@ velhoRouter.get(
     })
   );
 
+  velhoRouter.get(
+    '/list/:id',
+    
+    expressAsyncHandler(async (req, res) => {
+      
+      const velho = await Velho.findById(req.params.id);
+      
+      res.send( [velho ])
+
+    })
+  );
+
+  velhoRouter.put(
+    '/edit/:id',
+    isAuth,
+    
+    expressAsyncHandler(async (req, res) => {
+      const velhoId = req.params.id;
+      const velho = await Velho.findById(velhoId);
+      if (velho) {
+        
+        velho.consulta = req.body.status; 
+
+        const updatedVelho = await velho.save();
+        res.send( updatedVelho);
+      } else {
+        res.status(404).send({ message: 'Não encontrado' });
+      }
+    })
+  );
+
 
 velhoRouter.put(
     '/:id',

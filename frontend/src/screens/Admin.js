@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import{ Link, useHistory} from 'react-router-dom';
 
 import Axios from 'axios';
+import Header from '../components/Header';
 
 
 export default function Admin(props) {
@@ -83,42 +84,220 @@ useEffect(()=>{
         }
     
     }
+
+    async function abrirVelho(id) {
+        if (window.confirm("Tem certeza que deseja editar?")) {
+            try{
+                await  Axios.put(`/api/velho/edit/${id}`,
+                {status:true},   
+                {
+                    headers:{
+                        Authorization:`Bearer ${token}`,
+                        
+                    }
+                }).then(response =>{
+                    window.location.reload()
+        
+                })
+            
+    
+            } catch(err) {
+                alert(err);
+            }
+        }
+     }
+
+
+     async function fecharVelho(id) {
+        if (window.confirm("Tem certeza que deseja editar?")) {
+            try{
+                await  Axios.put(`/api/velho/edit/${id}`,
+                {status:false},   
+                {
+                    headers:{
+                        Authorization:`Bearer ${token}`,
+                        
+                    }
+                }).then(response =>{
+                    window.location.reload()
+        
+                })
+            
+    
+            } catch(err) {
+                alert(err);
+            }
+        }
+     }
+
+     async function fecharAgenda(id) {
+        if (window.confirm("Tem certeza que encerrar essa agenda?")) {
+            try{
+                await  Axios.put(`/api/agenda/close/${id}`,   
+                {
+                    headers:{
+                        Authorization:`Bearer ${token}`,
+                        
+                    }
+                }).then(response =>{
+                    window.location.reload()
+        
+                })
+            
+    
+            } catch(err) {
+                alert(err);
+            }
+        }
+     }
+
+     async function deleteAgenda(id) {
+        if (window.confirm("Tem certeza que deseja excluir essa agenda?")) {
+            try{
+                await  Axios.delete(`/api/agenda/${id}`,{
+                    headers:{
+                        Authorization:`Bearer ${token}`,
+                    }
+                }).then(response =>{
+                    window.location.reload()
+        
+                })
+            
+    
+            } catch(err) {
+                alert(err);
+            }
+        }
+     }
+
+     async function deleteVelho(id) {
+        if (window.confirm("Tem certeza que deseja excluir essa agenda?")) {
+            try{
+                await  Axios.delete(`/api/velho/${id}`,{
+                    headers:{
+                        Authorization:`Bearer ${token}`,
+                    }
+                }).then(response =>{
+                    window.location.reload()
+        
+                })
+            
+    
+            } catch(err) {
+                alert(err);
+            }
+        }
+     }
+
+
     
   return (
     <div>
-     <div style={{"text-align":"center"}}>Menu Inicial</div>
+        <Header/>
 
-     <div style={{"text-align":"center","padding":"10px"}}  >   
-            <button> Agenda </button>
-            <button > Agendamentos </button>
-            <button> Velhos </button>
-     </div>
 
-     <div style={{"text-align":"center"}} > 
-
-        <h1> Agendamentos  </h1>
-        
-        <button onClick={handleZerar}> Zerar </button>
-
-        {agendamentos !== '' && 
+        <div class="p-3 row container-fluid" style={{"text-align":"center"}}>
+                  <div class="col-sm ">
+                    <div class="br-card">
+                      <div class="card-header"><button class="br-button primary mt-3 mt-sm-0 ml-sm-3" type="button">Agendamentos
+        </button></div>
+                      <div class="card-content">
+                      {agendamentos !== '' && 
         <>
-         <p> Total: {agendamentos} </p>
+         <div> Total: {agendamentos} </div>
         </>
         } 
         {preferencial !== '' && 
         <>
-         <p> Preferencial: {preferencial} </p>
+         <div> Preferencial: {preferencial} </div>
         </>
         }
+        <div>
+        <button  onClick={handleZerar} class="br-button danger" type="button">Zerar 
+      </button>
+       
+        </div>
 
-        <Link to='agendamento'> <button> Detalhes </button> </Link>
-        
+      
+
+                          </div>
+                    </div>
+                  </div>
+                  <div class="col-sm ">
+                    <div class="br-card">
+                      <div class="card-header"><button class="br-button primary mt-3 mt-sm-0 ml-sm-3" type="button">Agenda
+        </button> </div>
+                      <div class="card-content">
+                     <Link to ='newagenda'> <button class="br-button  circle mt-3 mt-sm-0 ml-sm-3" type="button" aria-label="Ícone ilustrativo"><i class="fas fa-plus" aria-hidden="true"></i>
+        </button> </Link>
+        <button class="br-button  circle mt-3 mt-sm-0 ml-sm-3" type="button" aria-label="Ícone ilustrativo"><i class="fas fa-search" aria-hidden="true"></i>
+        </button>
+
+        {agenda !== '' && 
+        <>
+        {agenda.map((agenda) => (
+           
+            <div> {agenda.aberto === true ? 
+             <div> 
+                  <div class="p-3 br-switch medium">
+                  
+<input id="checkAgenda" name="checkAgenda" type="checkbox"  onChange={()=> fecharAgenda(agenda._id)}  defaultChecked />
+<label for="checkAgenda" style={{"color":"green"}} >  {agenda.diaData} </label>
+<button style={{"color":"red"}}
+onClick={()=> deleteAgenda(agenda._id)}
+class="br-button red circle mt-3 mt-sm-0 ml-sm-3" type="button" aria-label="Ícone ilustrativo"><i class="fa fa-trash" aria-hidden="true"></i>
+    </button>
+
+</div> 
+<div>
+    
+   
     </div>
+             </div>
+            :
+            <div class="p-3 medium">
+        
+            <label style={{"color":"blue"}} >  {agenda.diaData} </label>
+            <button class="br-button  circle mt-3 mt-sm-0 ml-sm-3" type="button" aria-label="Ícone ilustrativo"><i class="fas fa-search" aria-hidden="true"></i>
+        </button>
+<button 
+onClick={()=> deleteAgenda(agenda._id)}
+style={{"color":"red"}}
+class="br-button red circle mt-3 mt-sm-0 ml-sm-3" type="button" aria-label="Ícone ilustrativo"><i class="fa fa-trash" aria-hidden="true"></i>
+    </button>
 
+</div> 
+            
+            }  
+            
+            
+            
+            </div>               
+        
+    ))} 
+    </>
+        
+        }
 
-    <div style={{"text-align":"center"}} > 
-    <h1> Velhos </h1>
-   <Link to='newvelho'> <button> Novo </button> </Link>
+        
+
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm ">
+                    <div class="br-card">
+                      <div class="card-header ">
+  
+            <button class="br-button primary mt-3 mt-sm-0 ml-sm-3" type="button">Velhos
+        </button>
+        <Link to='newvelho' style={{"text-decoration":"none"}}> <div> <button class="br-button  circle mt-3 mt-sm-0 ml-sm-3" type="button" aria-label="Ícone ilustrativo"><i class="fas fa-plus" aria-hidden="true"></i>
+        </button>  </div> </Link>
+  
+        </div>
+                      <div class="card-content"> 
+                      
+                      <div style={{"text-align":"center"}} > 
+   
         {velhos !== '' && 
         <>
          <table className="w3-table w3-striped w3-white">
@@ -126,11 +305,9 @@ useEffect(()=>{
 <thead>
         <tr>
             <th>Nome</th>
-            <th>Medium</th>
             <th>Fila</th>
-            <th>Status</th>
             <th></th>
-            <th></th>
+            
             
             
             
@@ -138,36 +315,52 @@ useEffect(()=>{
         </thead>
        
         {velhos.map((velho) => (
-            <tr> 
-                <td> {velho.nome}</td>
-                <td> {velho.medium}</td>
-                <td> {velho.numFila} </td>
-                <td> {velho.consulta === true ? "Aberto" : "Fechado" }  </td>
-                <td> <button> Editar </button> </td> 
+           <tr> 
+                <td>  <Link style={{"color":"blue"}} to={`/agendamento/${velho._id}`} > {velho.nome} </Link></td>
+                <td> {10-velho.vagas} </td>
+                
+
+                <td>{velho.consulta === true ? 
+                <>
+                   <div class="p-3 br-switch medium">
+                  
+                  <input id="Close" name="Close" type="checkbox"  defaultChecked={true} onChange={()=> fecharVelho(velho._id)}  />
+                  <label for="Close" style={{"color":"green"}} >  </label>
+                  <button 
+                  onClick={()=> deleteVelho(velho._id)}
+                  style={{"color":"red"}}
+                  class="br-button red circle mt-3 mt-sm-0 ml-sm-3" type="button" aria-label="Ícone ilustrativo"><i class="fa fa-trash" aria-hidden="true"></i>
+                      </button>
+                      </div>
+                </> 
+                :
+                <>
+                   <div class="p-3 br-switch medium">
+                  
+                  <input id="Open" name="Open" type="checkbox" defaultChecked={false} onChange={()=> abrirVelho(velho._id)}  />
+                  <label for="Open" style={{"color":"green"}} >  </label>
+                  <button 
+                  onClick={()=> deleteVelho(velho._id)}
+                  style={{"color":"red"}}
+                  class="br-button red circle mt-3 mt-sm-0 ml-sm-3" type="button" aria-label="Ícone ilustrativo"><i class="fa fa-trash" aria-hidden="true"></i>
+                      </button>
+                      </div>
+                </> 
+                 
+                 } </td> 
             </tr>
+            
         ))} 
          </table>
         </>  
         }
     </div>
 
-    <div style={{"text-align":"center"}} > 
-        {agenda !== '' && 
-        <>
-         <h1> Agenda </h1> 
-        <Link to='newagenda'> <button> Abrir </button> </Link>
-        <button> Consultar </button>
-        {agenda.map((agenda) => (
-            <ul> 
-                <li> {agenda.diaData}  </li>
-                <li> {agenda.aberto === true ? "Aberto" : "Fechado" }  </li>
-                <li>  <button> Fechar </button></li>
-               
-            </ul>
-        ))} 
-        </>  
-        }
-    </div>
+                      
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
 
 
